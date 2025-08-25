@@ -1,0 +1,613 @@
+<!DOCTYPE html>
+<html lang="hi">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>IIT-style Registration Form</title>
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
+  <style>
+    :root{
+      --bg:#0b1020;
+      --card:#111833;
+      --muted:#97a0b5;
+      --text:#eef3ff;
+      --accent:#5b8cff;
+      --accent-2:#6effd0;
+      --danger:#ff5c7a;
+      --ok:#35d27f;
+      --ring: rgba(91,140,255,.45);
+      --shadow: 0 10px 30px rgba(0,0,0,.35);
+      --radius: 16px;
+    }
+    *{box-sizing:border-box}
+    html,body{height:100%}
+    body{
+      margin:0; background:radial-gradient(1200px 700px at 10% -10%, #1a2550 0%, transparent 60%),
+                 radial-gradient(900px 500px at 100% 0%, #15324e 0%, transparent 60%),
+                 var(--bg);
+      color:var(--text); font-family:Inter,system-ui,-apple-system,Segoe UI,Roboto,Ubuntu,"Helvetica Neue",Arial;
+      line-height:1.35;
+    }
+    .wrap{max-width:1050px; margin:32px auto; padding:0 16px}
+    header{
+      display:flex; align-items:center; gap:14px; margin-bottom:18px;
+    }
+    .logo{
+      width:54px; height:54px; border-radius:12px; background:
+      linear-gradient(135deg,#5b8cff, #6effd0); box-shadow:var(--shadow);
+      display:grid; place-items:center; font-weight:800; color:#0b1020;
+    }
+    h1{font-size:1.4rem; margin:0}
+    .sub{color:var(--muted); font-size:.92rem}
+    .card{
+      background:linear-gradient(180deg, rgba(255,255,255,.02), transparent 60%), var(--card);
+      border:1px solid rgba(255,255,255,.08);
+      border-radius:var(--radius);
+      box-shadow:var(--shadow);
+      overflow:hidden;
+    }
+    .steps{
+      display:grid; grid-template-columns: repeat(4,1fr);
+      background:rgba(255,255,255,.03); border-bottom:1px solid rgba(255,255,255,.06);
+    }
+    .step{
+      padding:14px 10px; text-align:center; font-weight:600; color:var(--muted);
+      position:relative; cursor:default;
+    }
+    .step.active{color:var(--text)}
+    .step::after{
+      content:""; position:absolute; left:0; right:0; bottom:0; height:3px; background:transparent;
+    }
+    .step.active::after{background:linear-gradient(90deg,var(--accent),var(--accent-2))}
+    form{padding:20px}
+    .grid{display:grid; gap:14px}
+    @media(min-width:720px){ .grid.cols-2{grid-template-columns:1fr 1fr} .grid.cols-3{grid-template-columns:repeat(3,1fr)}}
+    label{display:block; font-weight:600; margin:6px 0 6px;}
+    .req::after{content:" *"; color:var(--danger)}
+    input, select, textarea{
+      width:100%; padding:12px 12px; border-radius:12px; border:1px solid rgba(255,255,255,.12);
+      background:rgba(0,0,0,.25); color:var(--text); outline:none;
+    }
+    input::placeholder, textarea::placeholder{color:#9aa4bd}
+    input:focus, select:focus, textarea:focus{border-color:var(--accent); box-shadow:0 0 0 4px var(--ring)}
+    .hint{font-size:.85rem; color:var(--muted)}
+    .row{display:flex; gap:10px; flex-wrap:wrap; align-items:center}
+    .btn{
+      appearance:none; border:none; padding:12px 16px; border-radius:12px; font-weight:700; cursor:pointer;
+      background:linear-gradient(135deg,var(--accent), #8aa8ff); color:#0b1020;
+      transition:.2s transform ease, .2s filter ease;
+    }
+    .btn.secondary{background:transparent; color:var(--text); border:1px solid rgba(255,255,255,.14)}
+    .btn.danger{background:linear-gradient(135deg,#ff6f91,#ff9fb3)}
+    .btn:active{transform:translateY(1px)}
+    .section{display:none}
+    .section.active{display:block}
+    .file-note{font-size:.86rem; color:var(--muted)}
+    .img-preview{width:110px; height:110px; border-radius:12px; border:1px dashed rgba(255,255,255,.25); object-fit:cover; display:none}
+    .declaration{background:rgba(255,255,255,.03); padding:12px 14px; border-radius:12px; border:1px solid rgba(255,255,255,.08)}
+    .summary{
+      white-space:pre-wrap; background:rgba(0,0,0,.25); padding:14px; border-radius:12px; border:1px solid rgba(255,255,255,.08);
+      font-family:ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
+      color:#d9e3ff;
+    }
+    .footer-note{color:var(--muted); text-align:center; font-size:.85rem; padding:12px 0 24px}
+    .badge{display:inline-block; font-size:.78rem; padding:4px 8px; border-radius:999px; background:rgba(91,140,255,.15); border:1px solid rgba(91,140,255,.35); color:#cfe0ff; font-weight:700}
+    .captcha{display:flex; align-items:center; gap:12px}
+    .cap-box{padding:10px 14px; border-radius:10px; background:#0d1530; border:1px solid rgba(255,255,255,.10); font-weight:800; letter-spacing:.08em}
+    dialog{
+      border:none; padding:0; border-radius:16px; overflow:hidden; background:var(--card); color:var(--text);
+      border:1px solid rgba(255,255,255,.12); box-shadow:var(--shadow)
+    }
+    dialog .dlg-head{padding:16px 18px; border-bottom:1px solid rgba(255,255,255,.08); font-weight:800}
+    dialog .dlg-body{padding:18px}
+    dialog::backdrop{background:rgba(0,0,0,.6)}
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <header>
+      <div class="logo">IIT</div>
+      <div>
+        <h1>Undergraduate Admission — Registration</h1>
+        <div class="sub">Demo form (IIT-style). Fields & flows aap apni zaroorat ke hisaab se edit kar sakte ho.</div>
+      </div>
+    </header>
+
+    <div class="card">
+      <div class="steps" id="steps">
+        <div class="step active">1. Personal</div>
+        <div class="step">2. Contact</div>
+        <div class="step">3. Academics</div>
+        <div class="step">4. Upload & Submit</div>
+      </div>
+
+      <form id="regForm" novalidate>
+        <!-- SECTION 1 -->
+        <section class="section active" data-step="0">
+          <div class="grid cols-2">
+            <div>
+              <label class="req">Applicant Full Name (as per Class 10)</label>
+              <input name="fullName" required placeholder="e.g., Tehsin Khan"/>
+            </div>
+            <div>
+              <label class="req">Father's Name</label>
+              <input name="fatherName" required />
+            </div>
+            <div>
+              <label class="req">Mother's Name</label>
+              <input name="motherName" required />
+            </div>
+            <div>
+              <label class="req">Date of Birth</label>
+              <input type="date" name="dob" required max="2009-12-31" />
+              <div class="hint">Minimum age 16 by 31 Dec 2025 (示例). Max allowed DOB set.</div>
+            </div>
+
+            <div>
+              <label class="req">Gender</label>
+              <select name="gender" required>
+                <option value="">-- Select --</option>
+                <option>Male</option><option>Female</option><option>Other</option><option>Prefer not to say</option>
+              </select>
+            </div>
+            <div>
+              <label class="req">Category</label>
+              <select name="category" required>
+                <option value="">-- Select --</option>
+                <option>General</option><option>EWS</option><option>OBC-NCL</option><option>SC</option><option>ST</option>
+              </select>
+            </div>
+            <div>
+              <label class="req">Nationality</label>
+              <input name="nationality" required value="Indian" />
+            </div>
+            <div>
+              <label>PwD (Persons with Disability)</label>
+              <select name="pwd">
+                <option value="">No</option>
+                <option>Yes</option>
+              </select>
+            </div>
+          </div>
+
+          <div class="row" style="margin-top:12px">
+            <span class="badge">Identity</span>
+            <div style="flex:1"></div>
+          </div>
+          <div class="grid cols-3">
+            <div>
+              <label class="req">Government ID Type</label>
+              <select name="idType" required>
+                <option value="">-- Select --</option>
+                <option>Aadhaar</option><option>PAN</option><option>Passport</option><option>Driving Licence</option>
+              </select>
+            </div>
+            <div>
+              <label class="req">ID Number</label>
+              <input name="idNumber" required minlength="6" maxlength="20" placeholder="Do not add spaces" />
+              <div class="hint">Privacy tip: Demo form stores locally only.</div>
+            </div>
+            <div>
+              <label>Blood Group</label>
+              <select name="bloodGroup">
+                <option value="">Prefer not to say</option>
+                <option>A+</option><option>A-</option><option>B+</option><option>B-</option>
+                <option>O+</option><option>O-</option><option>AB+</option><option>AB-</option>
+              </select>
+            </div>
+          </div>
+        </section>
+
+        <!-- SECTION 2 -->
+        <section class="section" data-step="1">
+          <div class="grid cols-2">
+            <div>
+              <label class="req">Email</label>
+              <input type="email" name="email" required placeholder="you@example.com"/>
+            </div>
+            <div>
+              <label class="req">Mobile Number</label>
+              <input type="tel" name="mobile" required pattern="^[6-9]\d{9}$" placeholder="10-digit Indian mobile"/>
+              <div class="hint">Example: starts with 6/7/8/9</div>
+            </div>
+            <div>
+              <label class="req">Address (Line 1)</label>
+              <input name="addr1" required />
+            </div>
+            <div>
+              <label>Address (Line 2)</label>
+              <input name="addr2" />
+            </div>
+            <div>
+              <label class="req">State</label>
+              <select name="state" required>
+                <option value="">-- Select --</option>
+                <option>Uttar Pradesh</option><option>Uttarakhand</option><option>Haryana</option>
+                <option>Delhi</option><option>Bihar</option><option>Rajasthan</option>
+                <option>Madhya Pradesh</option><option>Maharashtra</option><option>Other</option>
+              </select>
+            </div>
+            <div>
+              <label class="req">PIN Code</label>
+              <input name="pin" required pattern="^\d{6}$" placeholder="6-digit PIN"/>
+            </div>
+          </div>
+
+          <div class="row" style="margin-top:12px">
+            <span class="badge">Programme & Exam</span>
+            <div style="flex:1"></div>
+          </div>
+          <div class="grid cols-3">
+            <div>
+              <label class="req">Programme Applying For</label>
+              <select name="programme" required>
+                <option value="">-- Select --</option>
+                <option>B.Tech CSE</option><option>B.Tech IT</option><option>B.Tech AI & ML</option>
+                <option>B.Tech Cyber Security</option>
+              </select>
+            </div>
+            <div>
+              <label class="req">Exam City Preference 1</label>
+              <input name="city1" required placeholder="e.g., Ghaziabad"/>
+            </div>
+            <div>
+              <label>Exam City Preference 2</label>
+              <input name="city2" placeholder="e.g., Delhi"/>
+            </div>
+            <div>
+              <label>Exam City Preference 3</label>
+              <input name="city3" placeholder="e.g., Noida"/>
+            </div>
+            <div>
+              <label class="req">Create Password</label>
+              <input type="password" name="password" required minlength="8" placeholder="Minimum 8 characters"/>
+            </div>
+            <div>
+              <label class="req">Confirm Password</label>
+              <input type="password" name="password2" required minlength="8"/>
+            </div>
+          </div>
+        </section>
+
+        <!-- SECTION 3 -->
+        <section class="section" data-step="2">
+          <div class="grid cols-3">
+            <div>
+              <label class="req">Class 10 Board</label>
+              <input name="board10" required placeholder="CBSE/UP Board/etc."/>
+            </div>
+            <div>
+              <label class="req">Year (10th)</label>
+              <input name="year10" required pattern="^(20\d{2}|19\d{2})$" placeholder="YYYY"/>
+            </div>
+            <div>
+              <label class="req">Percentage / CGPA (10th)</label>
+              <input name="perc10" required pattern="^\d{1,2}(\.\d{1,2})?$|^100$" placeholder="e.g., 85.6"/>
+            </div>
+
+            <div>
+              <label class="req">Class 12 Board</label>
+              <input name="board12" required placeholder="CBSE/UP Board/etc."/>
+            </div>
+            <div>
+              <label class="req">Year (12th)</label>
+              <input name="year12" required pattern="^(20\d{2})$" placeholder="YYYY"/>
+            </div>
+            <div>
+              <label class="req">Percentage (12th)</label>
+              <input name="perc12" required pattern="^\d{1,2}(\.\d{1,2})?$|^100$" placeholder="e.g., 70"/>
+            </div>
+
+            <div>
+              <label>JEE (Main) Roll No.</label>
+              <input name="jeeRoll" minlength="8" maxlength="15" placeholder="Optional"/>
+            </div>
+            <div>
+              <label>JEE (Main) Score</label>
+              <input name="jeeScore" pattern="^\d{1,3}(\.\d{1,2})?$" placeholder="Optional"/>
+            </div>
+            <div>
+              <label>CUET (UG) Roll No.</label>
+              <input name="cuetRoll" minlength="8" maxlength="15" placeholder="Optional"/>
+            </div>
+          </div>
+
+          <div style="margin-top:12px">
+            <label>Additional Achievements / Notes</label>
+            <textarea name="notes" rows="4" placeholder="Olympiads, projects, internships, etc."></textarea>
+          </div>
+        </section>
+
+        <!-- SECTION 4 -->
+        <section class="section" data-step="3">
+          <div class="grid cols-3">
+            <div>
+              <label class="req">Upload Photo (JPG/PNG)</label>
+              <input type="file" accept="image/*" id="photo" required />
+              <div class="file-note">200x200+ recommended, 20–200 KB.</div>
+              <img class="img-preview" id="photoPreview" alt="Photo preview"/>
+            </div>
+            <div>
+              <label class="req">Upload Signature (JPG/PNG)</label>
+              <input type="file" accept="image/*" id="sign" required />
+              <div class="file-note">Black/blue on white background.</div>
+              <img class="img-preview" id="signPreview" alt="Signature preview"/>
+            </div>
+            <div>
+              <label class="req">Class 10 Marksheet (PDF)</label>
+              <input type="file" accept="application/pdf" id="pdf10" required />
+            </div>
+            <div>
+              <label class="req">Class 12 Marksheet (PDF)</label>
+              <input type="file" accept="application/pdf" id="pdf12" required />
+            </div>
+            <div>
+              <label>Category Certificate (PDF)</label>
+              <input type="file" accept="application/pdf" id="pdfCat" />
+            </div>
+            <div>
+              <label>PwD Certificate (PDF)</label>
+              <input type="file" accept="application/pdf" id="pdfPwd" />
+            </div>
+          </div>
+
+          <div class="declaration" style="margin-top:14px">
+            <label class="row">
+              <input type="checkbox" id="declare" required />
+              <span>I hereby declare that all information provided is true and correct to the best of my knowledge.</span>
+            </label>
+          </div>
+
+          <div style="margin-top:14px">
+            <label class="req">Human verification</label>
+            <div class="captcha">
+              <div class="cap-box" id="capText"></div>
+              <input id="capInput" placeholder="Answer" required />
+              <button class="btn secondary" type="button" id="capRefresh">Refresh</button>
+            </div>
+          </div>
+
+          <div style="margin-top:16px">
+            <span class="badge">Application Summary (auto)</span>
+            <pre class="summary" id="summary">Fill the form and click “Generate Summary”.</pre>
+            <div class="row" style="margin-top:8px">
+              <button type="button" class="btn secondary" id="genSummary">Generate Summary</button>
+              <button type="button" class="btn secondary" id="downloadJSON">Download JSON</button>
+            </div>
+          </div>
+        </section>
+
+        <!-- NAV BUTTONS -->
+        <div class="row" style="margin-top:16px; justify-content:space-between">
+          <button type="button" class="btn secondary" id="prevBtn">← Previous</button>
+          <div class="row">
+            <button type="button" class="btn secondary" id="saveDraft">Save Draft</button>
+            <button type="button" class="btn" id="nextBtn">Next →</button>
+            <button type="submit" class="btn" id="submitBtn" style="display:none">Submit Application</button>
+          </div>
+        </div>
+      </form>
+    </div>
+
+    <div class="footer-note">
+      Demo only—no data sent to server. Drafts stored in your browser (LocalStorage).
+    </div>
+  </div>
+
+  <!-- Success Dialog -->
+  <dialog id="successDlg">
+    <div class="dlg-head">✅ Application Submitted</div>
+    <div class="dlg-body">
+      <p>Thank you! Your demo application has been “submitted”.</p>
+      <p>You can close this dialog and download your JSON summary if needed.</p>
+      <div class="row" style="justify-content:flex-end; margin-top:10px">
+        <button class="btn" id="closeDlg">Close</button>
+      </div>
+    </div>
+  </dialog>
+
+  <script>
+    // ---------- Utilities ----------
+    const $ = (sel, root=document) => root.querySelector(sel);
+    const $$ = (sel, root=document) => Array.from(root.querySelectorAll(sel));
+    const stepsEl = $("#steps");
+    const form = $("#regForm");
+    const sections = $$(".section");
+    const nextBtn = $("#nextBtn");
+    const prevBtn = $("#prevBtn");
+    const submitBtn = $("#submitBtn");
+    const genSummaryBtn = $("#genSummary");
+    const summaryEl = $("#summary");
+    const saveDraftBtn = $("#saveDraft");
+    const downloadJSONBtn = $("#downloadJSON");
+
+    let step = 0;
+
+    function setStep(n){
+      step = n;
+      sections.forEach((s,i)=> s.classList.toggle("active", i===n));
+      $$(".step", stepsEl).forEach((s,i)=> s.classList.toggle("active", i===n));
+      prevBtn.style.visibility = (n===0) ? "hidden" : "visible";
+      nextBtn.style.display = (n===sections.length-1) ? "none" : "inline-block";
+      submitBtn.style.display = (n===sections.length-1) ? "inline-block" : "none";
+      // scroll to top of card on step change
+      document.querySelector('.card').scrollIntoView({behavior:"smooth", block:"start"});
+    }
+    setStep(0);
+
+    function validateCurrentStep(){
+      // Validate required inputs in current section
+      const current = sections[step];
+      const inputs = $$("input, select, textarea", current);
+      let ok = true;
+      inputs.forEach(inp=>{
+        if(!inp.checkValidity()){
+          ok = false;
+          inp.reportValidity();
+        }
+      });
+      // password match check on Contact step
+      if(step===1){
+        const p1 = form.password.value.trim();
+        const p2 = form.password2.value.trim();
+        if(p1 !== p2 || p1.length<8){
+          ok=false;
+          form.password2.setCustomValidity("Password and Confirm Password must match & be at least 8 characters.");
+          form.password2.reportValidity();
+          form.password2.setCustomValidity("");
+        }
+      }
+      // minimal file validations on Uploads step
+      if(step===3){
+        const cap = $("#capInput").value.trim();
+        if(cap !== String(captcha.answer)){
+          ok=false;
+          $("#capInput").setCustomValidity("CAPTCHA answer incorrect.");
+          $("#capInput").reportValidity();
+          $("#capInput").setCustomValidity("");
+        }
+        if(!$("#declare").checked){
+          ok=false;
+          alert("Please accept the declaration.");
+        }
+      }
+      return ok;
+    }
+
+    nextBtn.addEventListener("click", ()=>{
+      if(!validateCurrentStep()) return;
+      setStep(Math.min(step+1, sections.length-1));
+    });
+
+    prevBtn.addEventListener("click", ()=> setStep(Math.max(step-1, 0)));
+
+    // ---------- Image preview ----------
+    const imagePreview = (fileInput, imgEl)=>{
+      fileInput.addEventListener("change", ()=>{
+        const f = fileInput.files?.[0];
+        if(!f) return;
+        if(!f.type.startsWith("image/")){
+          alert("Please select an image file.");
+          fileInput.value="";
+          return;
+        }
+        const url = URL.createObjectURL(f);
+        imgEl.src = url; imgEl.style.display="block";
+      });
+    };
+    imagePreview($("#photo"), $("#photoPreview"));
+    imagePreview($("#sign"), $("#signPreview"));
+
+    // ---------- CAPTCHA ----------
+    const captcha = {a:0,b:0,answer:0};
+    const capText = $("#capText");
+    function newCaptcha(){
+      captcha.a = Math.floor(10+Math.random()*40);
+      captcha.b = Math.floor(1+Math.random()*9);
+      captcha.answer = captcha.a + captcha.b;
+      capText.textContent = `${captcha.a}  +  ${captcha.b}  =  ?`;
+      $("#capInput").value="";
+    }
+    newCaptcha();
+    $("#capRefresh").addEventListener("click", newCaptcha);
+
+    // ---------- Generate Summary ----------
+    function getFormData(){
+      const data = Object.fromEntries(new FormData(form).entries());
+      // Files (names only for demo)
+      const files = {
+        photo: $("#photo").files?.[0]?.name || "",
+        sign: $("#sign").files?.[0]?.name || "",
+        pdf10: $("#pdf10").files?.[0]?.name || "",
+        pdf12: $("#pdf12").files?.[0]?.name || "",
+        pdfCat: $("#pdfCat").files?.[0]?.name || "",
+        pdfPwd: $("#pdfPwd").files?.[0]?.name || ""
+      };
+      return {...data, files};
+    }
+    function renderSummary(){
+      const d = getFormData();
+      const maskedId = d.idNumber ? d.idNumber.replace(/.(?=.{4})/g,"•") : "";
+      const maskedPhone = d.mobile ? d.mobile.replace(/^(\d{2})\d{6}(\d{2})$/,"$1••••••$2") : "";
+      const lines = [
+        `Name: ${d.fullName || "-"}`,
+        `DOB: ${d.dob || "-"}`,
+        `Gender: ${d.gender || "-"}`,
+        `Category: ${d.category || "-"}`,
+        `Nationality: ${d.nationality || "-"}`,
+        `ID: ${d.idType || "-"} ${maskedId}`,
+        `Mobile: ${maskedPhone}`,
+        `Email: ${d.email || "-"}`,
+        `Address: ${[d.addr1,d.addr2,d.state,d.pin].filter(Boolean).join(", ") || "-"}`,
+        `Programme: ${d.programme || "-"}`,
+        `Exam Cities: ${[d.city1,d.city2,d.city3].filter(Boolean).join(" / ") || "-"}`,
+        `10th: ${d.board10 || "-"} | Year: ${d.year10 || "-"} | %/CGPA: ${d.perc10 || "-"}`,
+        `12th: ${d.board12 || "-"} | Year: ${d.year12 || "-"} | %: ${d.perc12 || "-"}`,
+        `JEE Main: Roll ${d.jeeRoll || "-"} | Score ${d.jeeScore || "-"}`,
+        `CUET UG: Roll ${d.cuetRoll || "-"}`,
+        `Notes: ${d.notes || "-"}`,
+        `Files: ${Object.entries(getFormData().files).map(([k,v])=> v? `${k}:${v}`:"").filter(Boolean).join(", ") || "-"}`,
+      ];
+      summaryEl.textContent = lines.join("\n");
+    }
+    genSummaryBtn.addEventListener("click", renderSummary);
+
+    // ---------- Submit ----------
+    const dlg = $("#successDlg");
+    $("#closeDlg").addEventListener("click", ()=> dlg.close());
+
+    form.addEventListener("submit", (e)=>{
+      e.preventDefault();
+      if(!validateCurrentStep()) return;
+      renderSummary();
+      dlg.showModal();
+    });
+
+    // ---------- Save / Load Draft (LocalStorage) ----------
+    const DRAFT_KEY = "iit_demo_registration_v1";
+    function saveDraft(){
+      const data = getFormData();
+      // passwords excluded in draft for safety
+      delete data.password; delete data.password2;
+      localStorage.setItem(DRAFT_KEY, JSON.stringify(data));
+      alert("Draft saved to your browser.");
+    }
+    function loadDraft(){
+      const raw = localStorage.getItem(DRAFT_KEY);
+      if(!raw) return;
+      try{
+        const d = JSON.parse(raw);
+        Object.entries(d).forEach(([k,v])=>{
+          if(form[k] && form[k].type !== "file"){
+            form[k].value = v;
+          }
+        });
+      }catch(e){}
+    }
+    saveDraftBtn.addEventListener("click", saveDraft);
+    window.addEventListener("DOMContentLoaded", loadDraft);
+
+    // ---------- Download JSON ----------
+    downloadJSONBtn.addEventListener("click", ()=>{
+      const data = getFormData();
+      const blob = new Blob([JSON.stringify(data,null,2)], {type:"application/json"});
+      const a = document.createElement("a");
+      a.href = URL.createObjectURL(blob);
+      a.download = "application.json";
+      a.click();
+      URL.revokeObjectURL(a.href);
+    });
+
+    // ---------- Small UX niceties ----------
+    // Enter key on inputs (except textarea) behaves like Next/Submit
+    form.addEventListener("keydown",(e)=>{
+      const isTextArea = e.target && e.target.tagName === "TEXTAREA";
+      if(e.key === "Enter" && !isTextArea){
+        e.preventDefault();
+        if(step < sections.length-1) nextBtn.click(); else submitBtn.click();
+      }
+    });
+  </script>
+</body>
+</html>
